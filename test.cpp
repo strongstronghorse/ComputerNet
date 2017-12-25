@@ -10,6 +10,7 @@ int main()
 	int v1, v2,num;
 	Graphlnk<string, int> g;
 	g.readtext();
+	cout << "test" <<endl;
 	while (1)
 	{
 		cout << "=======路由器功能实现======" << endl;
@@ -64,6 +65,7 @@ int main()
 			break;
 		case'6':
 			exit(0);
+
 			break;
 		}
 
@@ -71,3 +73,4 @@ int main()
 
 	return 0;
 }
+
