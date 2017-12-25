@@ -211,3 +211,140 @@ void Graphlnk<T, E>::ShortestPath(int v1)
 	}
 	printRouTable(v, dist, path,S);
 }
+template<class T, class E>
+void Graphlnk<T, E>::ShortestPath(int v1)
+{//Graph是一个带权有向图，本算法建立一个数组，dist[j],0<=j<n;是当前求到的从顶点v到顶点j的最短路径长度，同时用数组path存放求到的最短路径,S[]标志位存放是否有最短路径
+	int	v = getVertexPos(v1);				//得到编号v1的顶点位置
+	int n = numVertices;
+	E *dist = new E[n];
+	int *path = new int[n];
+	bool *S = new bool[n];
+	int i, j, k;
+	E w, min;
+	for (i = 0; i<n; i++)
+	{
+		dist[i] = getWeight(v, i);
+		S[i] = false;
+		if (i != v && dist[i] <maxValue)
+			path[i] = v;
+		else
+		{
+			path[i] = -1;
+		}
+	}
+	S[v] = true;
+	dist[v] = 0;
+	for (i = 0; i<n - 1; i++)
+	{
+		min = maxValue;
+		int u = v;
+		for (j = 0; j<n; j++)
+		{
+			if (S[j] == false && dist[j] < min)
+			{
+				u = j;
+				min = dist[j];
+			}
+		}
+		S[u] = true;
+		for (k = 0; k<n; k++)
+		{
+			w = getWeight(u, k);
+			if (S[k] == false && w <maxValue && dist[u] + w<dist[k])
+			{
+				dist[k] = dist[u] + w;
+				path[k] = u;
+			}
+		}
+	}
+	printRouTable(v, dist, path,S);
+}
+template<class T, class E>
+void Graphlnk<T, E>::ShortestPath(int v1)
+{//Graph是一个带权有向图，本算法建立一个数组，dist[j],0<=j<n;是当前求到的从顶点v到顶点j的最短路径长度，同时用数组path存放求到的最短路径,S[]标志位存放是否有最短路径
+	int	v = getVertexPos(v1);				//得到编号v1的顶点位置
+	int n = numVertices;
+	E *dist = new E[n];
+	int *path = new int[n];
+	bool *S = new bool[n];
+	int i, j, k;
+	E w, min;
+	for (i = 0; i<n; i++)
+	{
+		dist[i] = getWeight(v, i);
+		S[i] = false;
+		if (i != v && dist[i] <maxValue)
+			path[i] = v;
+		else
+		{
+			path[i] = -1;
+		}
+	}
+	S[v] = true;
+	dist[v] = 0;
+	for (i = 0; i<n - 1; i++)
+	{
+		min = maxValue;
+		int u = v;
+		for (j = 0; j<n; j++)
+		{
+			if (S[j] == false && dist[j] < min)
+			{
+				u = j;
+				min = dist[j];
+			}
+		}
+		S[u] = true;
+		for (k = 0; k<n; k++)
+		{
+			w = getWeight(u, k);
+			if (S[k] == false && w <maxValue && dist[u] + w<dist[k])
+			{
+				dist[k] = dist[u] + w;
+				path[k] = u;
+			}
+		}
+	}
+	printRouTable(v, dist, path,S);
+}
+template<class T, class E>
+void Graphlnk<T, E>::printRouTable(int v, E dist[], int path[],bool S[])		//v为nodeta位置
+{//输出path数组中存储的图G从顶点v到其余各顶点的路径和距离
+	cout << "路由表" << getValue(v) << "的路由表为:" << endl;
+	int i, j, k, n = numVertices;
+	int m = 0;
+	string netN, subN;
+	cout << "目 的 网 络  子 网 掩 码      下一跳               | 距 离" << endl;
+	int * d = new int[n];						//保存最短路径
+	for (i = 0; i<n; i++)
+	{
+		if (i != v)
+		{
+			netN = NodeTable[i].borderNetNum;
+			subN = NodeTable[i].subNumber;
+			if (S[i] == false) {
+				cout << netN << " |" << subN << " |" << "  不可达    " << "    |      " << maxValue << endl;
+				continue;
+			}
+			j = i;
+			k = 0;
+			while (j != v)
+			{
+				d[k++] = j;					//d[k]存的是编号
+				j = path[j];
+			}
+			k--;
+			if (k == 0)
+			{
+				m = getPort(v, d[k]);				//得到的接口号
+				cout << netN << " |" << subN << " |" << "  直接交付接口" << NodeTable[v].por[m].num << "    |    " << dist[i] << endl;
+			}
+			else if (k >= 1)
+			{
+				cout << netN << " |" << subN << " |" << "     " << getValue(d[k]) << "      |    " << dist[i] << endl;
+
+			}
+		}
+	}
+	delete[] d;
+}
