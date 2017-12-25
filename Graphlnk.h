@@ -6,16 +6,16 @@
 using namespace std;
 const int DefaultNumOfPort = 8;
 const int DefaultVertices = 8;
-const int MaxVertices = 100;	//å›¾ä¸­çš„æœ€å¤§é¡¶ç‚¹æ•°ç›®
-const int maxValue = 10000;	//æ— ç©·å¤§çš„æƒå€¼
-const string invalidN = "0.0.0.0";//æ— æ•ˆç½‘ç»œå·
+const int MaxVertices = 100;	//å›¾ä¸­çš„æœ€å¤§é¡¶ç‚¹æ•°ç›?
+const int maxValue = 10000;	//æ— ç©·å¤§çš„æƒå€?
+const string invalidN = "0.0.0.0";//æ— æ•ˆç½‘ç»œå?
 const string invalidS = "255.255.255.255";//æ— æ•ˆå­ç½‘æ©ç 
 template<class T, class E>
 struct Edge
 {
 	int dest;
-	string netNum;          //ç½‘ç»œå·
-	E cost;                 //æƒå€¼
+	string netNum;          //ç½‘ç»œå?
+	E cost;                 //æƒå€?
 	Edge<T, E> *link;
 	string subNum;          //å­ç½‘æ©ç 
 	Edge(int i_dest, string s_netNum, string subNum_mask, E i_cost)
@@ -32,19 +32,19 @@ struct Edge
 	}
 };
 struct port {
-	int num;		//ç«¯å£å·
+	int num;		//ç«¯å£å?
 	string netNum;  //ç«¯å£æ‰€å±ç½‘ç»œå·
 };
 template<class T, class E>
 struct Vertex
 {
 	int numRouter;				 //è·¯ç”±ç¼–å·
-	T nameRouter;				 //è·¯ç”±å™¨åç§°
+	T nameRouter;				 //è·¯ç”±å™¨åç§?
 	string borderNetNum;		//è¾¹ç•Œè·¯ç”±å™¨ç½‘ç»œå·
 	string subNumber;			 //å­ç½‘æ©ç 
 	port *por;					 //æ¥å£æ•°ç»„
-	int numofports;				 //å½“å‰æ¥å£æ•°
-	Edge<T, E> *adj;			 //è¾¹é“¾è¡¨çš„å¤´æŒ‡é’ˆ
+	int numofports;				 //å½“å‰æ¥å£æ•?
+	Edge<T, E> *adj;			 //è¾¹é“¾è¡¨çš„å¤´æŒ‡é’?
 	Vertex() {
 		por = new port[DefaultNumOfPort];
 		numofports = 0;
@@ -56,11 +56,11 @@ class Graphlnk
 public:
 	Graphlnk(int sz = MaxVertices);
 	~Graphlnk();
-	T getValue(int i)					//å–ä½ç½®ä¸ºiçš„é¡¶ç‚¹ä¸­çš„å€¼
+	T getValue(int i)					//å–ä½ç½®ä¸ºiçš„é¡¶ç‚¹ä¸­çš„å€?
 	{
 		return (i >= 0 && i< numVertices) ? NodeTable[i].nameRouter : 0;
 	}
-	E getWeight(int v1, int v2);			//è¿”å›è¾¹(v1,v2)çš„æƒå€¼
+	E getWeight(int v1, int v2);			//è¿”å›è¾?v1,v2)çš„æƒå€?
 	bool insertVertex(const Vertex<T, E> vertex);
 	bool removeVertex(int v);
 	bool insertEdge(int v1, int v2, const Edge<T, E> edge);
@@ -71,7 +71,7 @@ public:
 	{
 		return this->numVertices;
 	}
-	void getNetMeg(int v1, int v2, string &x, string &y) {						//ä¼ å‡ºå‹å‚æ•°,å¾—åˆ°ç½‘ç»œå·å’Œå­ç½‘æ©ç 
+	void getNetMeg(int v1, int v2, string &x, string &y) {						//ä¼ å‡ºå‹å‚æ•?å¾—åˆ°ç½‘ç»œå·å’Œå­ç½‘æ©ç 
 		if (v1 != -1 && v2 != -1)
 		{
 			Edge<T, E> *p = NodeTable[v1].adj;
@@ -91,7 +91,7 @@ public:
 		}
 
 	}
-	int getPort(int v1, int v2) {					//å¾—åˆ°æ¥å£å·
+	int getPort(int v1, int v2) {					//å¾—åˆ°æ¥å£å?
 		if (v1 != -1 && v2 != -1)
 		{
 			Edge<T, E> *p = NodeTable[v1].adj;
@@ -168,3 +168,76 @@ bool Graphlnk<T, E>::insertVertex(const Vertex<T, E> vertex)
 	return true;
 
 }
+
+template<class T, class E>
+bool Graphlnk<T, E>::removeVertex(int v)		//Í¬Ê±É¾³ıºÍÕâ¸öµãÓĞ¹ØµÄ±ß
+{
+	int n = 0;
+	v = getVertexPos(v);				//µÃµ½±àºÅv1µÄ¶¥µãÎ»ÖÃ
+	if (numVertices == 1 || v<0 || v >= numVertices)return false;
+	Edge<T, E> *p, *s, *t;
+	int i, k;
+	while (NodeTable[v].adj != NULL)			//Öğ¸öÉ¾³ıÓëÆäÁÚ½ÓµÄµã¶ÔÓ¦µÄv
+	{
+		p = NodeTable[v].adj;
+		k = p->dest;
+		s = NodeTable[k].adj;					//ÕÒµ½ºÍÕâ¸öµãÁÚ½ÓµÄµã²¢É¾³ıÏàÓ¦±ß
+		t = NULL;
+		while (s != NULL && s->dest != v)
+		{
+			t = s;                           //tÎªsµÄÉÏÒ»¸öµã
+			s = s->link;					 //ÕÒµ½ÄÇ¸öµã
+		}									 //sÖ¸ÏòÏÂÒ»¸öµãÎªv
+		if (s != NULL)
+		{
+			if (t == NULL) NodeTable[k].adj = s->link;  //ÒâÎ¶×Ås->dest==vµÚÒ»¸öµã
+			else t->link = s->link;						//Ç°Ò»¸öµãºÍºóÒ»µãÁ¬½ÓÆğÀ´
+			delete s;
+		}
+		NodeTable[v].adj = p->link;				//±éÀúµ½ÏÂÒ»¸öÎ»ÖÃ
+		delete p;
+		numEdges--;								//Ã¿´ÎÉ¾³ı±ßÊıÒ»Ìõ
+	}
+	numVertices--;
+	NodeTable[v].numRouter = NodeTable[numVertices].numRouter;				//½«É¾³ıµãµÄĞÅÏ¢¸´ÖÆÎª×îºóÒ»¸öµãµÄĞÅÏ¢£¬µã´Ó0¿ªÊ¼
+	NodeTable[v].nameRouter = NodeTable[numVertices].nameRouter;
+	NodeTable[v].numofports = NodeTable[numVertices].numofports;
+	n = NodeTable[numVertices].numofports;											//½Ó¿ÚÊıÎª×îºóÒ»¸ö¶¥µã½Ó¿ÚÊı
+	for (int i = 0; i < n; i++)
+	{
+		NodeTable[v].por[i].num = NodeTable[numVertices].por[i].num;							//ÒÀ´Î½ÓÈë½Ó¿Ú
+		NodeTable[v].por[i].netNum = NodeTable[numVertices].por[i].netNum;				//½«ÍøÂçºÅ´«Èëµ½½Ó¿ÚµÄÍøÂçºÅ
+	}
+	p = NodeTable[v].adj = NodeTable[numVertices].adj;						//Á©¸öÖØ¸´ĞÅÏ¢
+	while (p != NULL)
+	{
+		k = p->dest;
+		s = NodeTable[k].adj;
+		while (s != NULL) {
+			if (s->dest == numVertices) {								 //É¾³ıÖØ¸´×îºóÒ»¸öµã¶¥µãÎ»ÖÃ¶ÔÓ¦µÄ±ßÊ¹ÆäÖ¸ÏòÏÂÏÂ¸öÁÚ½Óµã£¬ÀàËÆÉÏÃæµÄÉ¾³ı
+				s->dest = v;
+				break;
+			}
+			else s = s->link;
+		}
+			p = p->link;									//±éÀúµ½ÏÂÒ»¸öÁÚ½Óµã
+	}
+	return true;
+}
+
+template<class T, class E>
+E Graphlnk<T, E>::getWeight(int v1, int v2)
+{
+	if (v1 != -1 && v2 != -1)
+	{
+		Edge<T, E> *p = NodeTable[v1].adj;
+		while (p != NULL && p->dest != v2)
+		{
+			p = p->link;
+		}
+		if (p != NULL)
+			return p->cost;
+		else return maxValue;
+	}
+}
+
