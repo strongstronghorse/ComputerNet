@@ -348,3 +348,64 @@ void Graphlnk<T, E>::printRouTable(int v, E dist[], int path[],bool S[])		//v为n
 	}
 	delete[] d;
 }
+template<class T, class E>
+bool Graphlnk<T, E>::removeVertex(int v)		//同时删除和这个点有关的边
+{
+	int n = 0;
+	v = getVertexPos(v);				//得到编号v1的顶点位置
+	if (numVertices == 1 || v<0 || v >= numVertices)return false;
+	Edge<T, E> *p, *s, *t;
+	int i, k;
+	while (NodeTable[v].adj != NULL)			//逐个删除与其邻接的点对应的v
+	{
+		p = NodeTable[v].adj;
+		k = p->dest;
+		s = NodeTable[k].adj;					//找到和这个点邻接的点并删除相应边
+		t = NULL;
+		while (s != NULL && s->dest != v)
+		{
+			t = s;                           //t为s的上一个点
+			s = s->link;					 //找到那个点
+		}									 //s指向下一个点为v
+		if (s != NULL)
+		{
+			if (t == NULL) NodeTable[k].adj = s->link;  //意味着s->dest==v第一个点
+			else t->link = s->link;						//前一个点和后一点连接起来
+			delete s;
+		}
+		NodeTable[v].adj = p->link;				//遍历到下一个位置
+		delete p;
+		numEdges--;								//每次删除边数一条
+	}
+	numVertices--;
+	NodeTable[v].numRouter = NodeTable[numVertices].numRouter;				//将删除点的信息复制为最后一个点的信息，点从0开始
+	NodeTable[v].nameRouter = NodeTable[numVertices].nameRouter;
+	NodeTable[v].numofports = NodeTable[numVertices].numofports;
+	NodeTable[v].borderNetNum = NodeTable[numVertices].borderNetNum;
+	NodeTable[v].subNumber = NodeTable[numVertices].subNumber;
+	n = NodeTable[numVertices].numofports;											//接口数为最后一个顶点接口数
+	for (int i = 0; i < n; i++)
+	{
+		NodeTable[v].por[i].num = NodeTable[numVertices].por[i].num;							//依次接入接口
+		NodeTable[v].por[i].netNum = NodeTable[numVertices].por[i].netNum;				//将网络号传入到接口的网络号
+	}
+	p = NodeTable[v].adj = NodeTable[numVertices].adj;						//俩个重复信息
+	while (p != NULL)
+	{
+		k = p->dest;
+		s = NodeTable[k].adj;
+		while (s != NULL) {
+			if (s->dest == numVertices) {								 //删除重复最后一个点顶点位置对应的边使其指向下下个邻接点，类似上面的删除
+				s->dest = v;
+				break;
+			}
+			else s = s->link;
+		}
+		p = p->link;									//遍历到下一个邻接点
+	}
+	cout << "删除成功" << endl;
+	cout << "(现可供使用的路由器有: ";
+	traverse();
+	cout << endl;
+	return true;
+}
