@@ -218,3 +218,53 @@ bool Graphlnk<T, E>::removeEdge(int v1, int v2)
 	cout << "É¾³ıÊ§°Ü" << endl;
 	return false;
 }
+string Graphlnk<T, E>::merge(string net, string subnet)
+{
+	string a;
+	int length = net.length() - 1;
+	int sublength = subnet.length() - 1;
+	int part[4] = { 0,0,0,0 };
+	int spart[4] = { 0,0,0,0 };
+	int fpart[4] = { 0,0,0,0 };
+	int tag = 1;
+	int t = 0;
+	int temp = 0;
+	for (int i = length; i >= 0; i--)
+	{
+		if (net[i] != '.')
+		{
+			temp = (net[i] - 48) * tag;
+			part[t] += temp;
+			tag *= 10;
+
+		}
+		else {
+			t++;
+			tag = 1;
+		}
+	}
+	tag = 1;
+	t = 0;
+	temp = 0;
+	for (int i = sublength; i >= 0; i--)
+	{
+		if (subnet[i] != '.')
+		{
+			temp = (subnet[i] - 48) * tag;
+			spart[t] += temp;
+			tag *= 10;
+
+		}
+		else {
+			t++;
+			tag = 1;
+		}
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		fpart[i] = spart[i] & part[i];
+	}
+	a = to_string(fpart[3]) + '.' + to_string(fpart[2]) + '.' + to_string(fpart[1]) + '.' + to_string(fpart[0]);
+	return  a;
+}
+#endif
