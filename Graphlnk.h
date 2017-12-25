@@ -127,3 +127,87 @@ private:
 	int numEdges;
 	int numVertices;
 };
+template<class T, class E>
+Graphlnk<T, E>::Graphlnk(int sz /* = DeafultVertices */)
+{
+	maxVertices = sz;
+	numVertices = 0;
+	numEdges = 0;
+	NodeTable = NULL;
+	try
+	{
+		NodeTable = new Vertex<T, E>[maxVertices];
+	}
+	catch (bad_alloc & memExp)
+	{
+		cerr << memExp.what() << endl;
+	}
+	for (int i = 0; i<maxVertices; i++)
+	{
+		NodeTable[i].adj = NULL;
+	}
+}
+template<class T, class E>
+Graphlnk<T, E>::~Graphlnk()
+{
+	for (int i = 0; i<maxVertices; i++)
+	{
+		Edge<T, E> * p = NodeTable[i].adj;
+		while (p != NULL)
+		{
+			NodeTable[i].adj = p->link;
+			delete p;
+			p = NodeTable[i].adj;
+		}
+	}
+	delete[] NodeTable;
+}
+
+template<class T, class E>
+void Graphlnk<T, E>::ShortestPath(int v1)
+{//Graph是一个带权有向图，本算法建立一个数组，dist[j],0<=j<n;是当前求到的从顶点v到顶点j的最短路径长度，同时用数组path存放求到的最短路径,S[]标志位存放是否有最短路径
+	int	v = getVertexPos(v1);				//得到编号v1的顶点位置
+	int n = numVertices;
+	E *dist = new E[n];
+	int *path = new int[n];
+	bool *S = new bool[n];
+	int i, j, k;
+	E w, min;
+	for (i = 0; i<n; i++)
+	{
+		dist[i] = getWeight(v, i);
+		S[i] = false;
+		if (i != v && dist[i] <maxValue)
+			path[i] = v;
+		else
+		{
+			path[i] = -1;
+		}
+	}
+	S[v] = true;
+	dist[v] = 0;
+	for (i = 0; i<n - 1; i++)
+	{
+		min = maxValue;
+		int u = v;
+		for (j = 0; j<n; j++)
+		{
+			if (S[j] == false && dist[j] < min)
+			{
+				u = j;
+				min = dist[j];
+			}
+		}
+		S[u] = true;
+		for (k = 0; k<n; k++)
+		{
+			w = getWeight(u, k);
+			if (S[k] == false && w <maxValue && dist[u] + w<dist[k])
+			{
+				dist[k] = dist[u] + w;
+				path[k] = u;
+			}
+		}
+	}
+	printRouTable(v, dist, path,S);
+}
