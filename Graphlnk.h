@@ -127,3 +127,16 @@ private:
 	int numEdges;
 	int numVertices;
 };
+
+
+template<class T, class E>
+bool Graphlnk<T, E>::insertVertex(const Vertex<T, E> vertex)
+{
+	if (numVertices == maxVertices) return false;
+	NodeTable[numVertices].nameRouter = vertex.nameRouter;
+	NodeTable[numVertices].numRouter = vertex.numRouter;
+	NodeTable[numVertices].borderNetNum = vertex.borderNetNum;
+	NodeTable[numVertices].subNumber = vertex.subNumber;
+	numVertices++;
+	return true;
+}
