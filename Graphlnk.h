@@ -6,18 +6,18 @@
 using namespace std;
 const int DefaultNumOfPort = 8;
 const int DefaultVertices = 8;
-const int MaxVertices = 100;	//图中的最大顶点数�?
-const int maxValue = 10000;	//无穷大的权�?
-const string invalidN = "0.0.0.0";//无效网络�?
-const string invalidS = "255.255.255.255";//无效子网掩码
+const int MaxVertices = 100;	//鍥句腑鐨勬渶澶ч《鐐规暟鐩?
+const int maxValue = 10000;	//鏃犵┓澶х殑鏉冨�?
+const string invalidN = "0.0.0.0";//鏃犳晥缃戠粶鍙?
+const string invalidS = "255.255.255.255";//鏃犳晥瀛愮綉鎺╃爜
 template<class T, class E>
 struct Edge
 {
 	int dest;
-	string netNum;          //网络�?
-	E cost;                 //权�?
+	string netNum;          //缃戠粶鍙?
+	E cost;                 //鏉冨�?
 	Edge<T, E> *link;
-	string subNum;          //子网掩码
+	string subNum;          //瀛愮綉鎺╃爜
 	Edge(int i_dest, string s_netNum, string subNum_mask, E i_cost)
 	{
 		dest = i_dest;
@@ -32,19 +32,19 @@ struct Edge
 	}
 };
 struct port {
-	int num;		//端口�?
-	string netNum;  //端口所属网络号
+	int num;		//绔彛鍙?
+	string netNum;  //绔彛鎵�灞炵綉缁滃彿
 };
 template<class T, class E>
 struct Vertex
 {
-	int numRouter;				 //路由编号
-	T nameRouter;				 //路由器名�?
-	string borderNetNum;		//边界路由器网络号
-	string subNumber;			 //子网掩码
-	port *por;					 //接口数组
-	int numofports;				 //当前接口�?
-	Edge<T, E> *adj;			 //边链表的头指�?
+	int numRouter;				 //璺敱缂栧彿
+	T nameRouter;				 //璺敱鍣ㄥ悕绉?
+	string borderNetNum;		//杈圭晫璺敱鍣ㄧ綉缁滃彿
+	string subNumber;			 //瀛愮綉鎺╃爜
+	port *por;					 //鎺ュ彛鏁扮粍
+	int numofports;				 //褰撳墠鎺ュ彛鏁?
+	Edge<T, E> *adj;			 //杈归摼琛ㄧ殑澶存寚閽?
 	Vertex() {
 		por = new port[DefaultNumOfPort];
 		numofports = 0;
@@ -56,11 +56,11 @@ class Graphlnk
 public:
 	Graphlnk(int sz = MaxVertices);
 	~Graphlnk();
-	T getValue(int i)					//取位置为i的顶点中的�?
+	T getValue(int i)					//鍙栦綅缃负i鐨勯《鐐逛腑鐨勫�?
 	{
 		return (i >= 0 && i< numVertices) ? NodeTable[i].nameRouter : 0;
 	}
-	E getWeight(int v1, int v2);			//返回�?v1,v2)的权�?
+	E getWeight(int v1, int v2);			//杩斿洖杈?v1,v2)鐨勬潈鍊?
 	bool insertVertex(const Vertex<T, E> vertex);
 	bool removeVertex(int v);
 	bool insertEdge(int v1, int v2, const Edge<T, E> edge);
@@ -71,7 +71,7 @@ public:
 	{
 		return this->numVertices;
 	}
-	void getNetMeg(int v1, int v2, string &x, string &y) {						//传出型参�?得到网络号和子网掩码
+	void getNetMeg(int v1, int v2, string &x, string &y) {						//浼犲嚭鍨嬪弬鏁?寰楀埌缃戠粶鍙峰拰瀛愮綉鎺╃爜
 		if (v1 != -1 && v2 != -1)
 		{
 			Edge<T, E> *p = NodeTable[v1].adj;
@@ -91,7 +91,7 @@ public:
 		}
 
 	}
-	int getPort(int v1, int v2) {					//得到接口�?
+	int getPort(int v1, int v2) {					//寰楀埌鎺ュ彛鍙?
 		if (v1 != -1 && v2 != -1)
 		{
 			Edge<T, E> *p = NodeTable[v1].adj;
@@ -136,7 +136,7 @@ void Graphlnk<T, E>::readtext() {
 	int v1, v2;
 	vfile.open("routers.txt");
 	if (!vfile) {
-		cout << "无法打开文件" << endl;
+		cout << "鏃犳硶鎵撳紑鏂囦欢" << endl;
 		exit(1);
 	}
 	while (vfile.eof() != 1)
@@ -146,7 +146,7 @@ void Graphlnk<T, E>::readtext() {
 	}
 	efile.open("edges.txt");
 	if (!efile) {
-		cout << "无法打开文件" << endl;
+		cout << "鏃犳硶鎵撳紑鏂囦欢" << endl;
 		exit(1);
 	}
 	while (efile.eof() != 1)
@@ -168,22 +168,23 @@ bool Graphlnk<T, E>::insertVertex(const Vertex<T, E> vertex)
 	return true;
 
 }
+
 template<class T, class E>
 bool Graphlnk<T, E>::removeEdge(int v1, int v2)
 {
-	v1 = getVertexPos(v1);										//��·�ɱ����ת��Ϊ�ڽӱ��ж���λ��
+	v1 = getVertexPos(v1);										//将路由表编号转化为邻接表中顶点位置
 	v2 = getVertexPos(v2);
 	if (v1 != -1 && v2 != -1)
 	{
 		Edge<T, E> *p = NodeTable[v1].adj, *q = NULL, *s = p;
-		while (p != NULL && p->dest != v2)						//�ҵ���Ӧ�����ڽӱ���λ��
+		while (p != NULL && p->dest != v2)						//找到对应边在邻接表的位置
 		{
 			q = p;
 			p = p->link;
 		}
 		if (p != NULL)
 		{
-			if (p == s)											//v1��һ���ڽӵ�Ϊv2
+			if (p == s)											//v1第一个邻接点为v2
 				NodeTable[v1].adj = p->link;
 			else
 			{
@@ -211,11 +212,11 @@ bool Graphlnk<T, E>::removeEdge(int v1, int v2)
 		}
 		delete p;
 		numEdges--;
-		cout << " ɾ���ɹ�" << endl;
+		cout << " 删除成功" << endl;
 		
 		return true;
 	}
-	cout << "ɾ��ʧ��" << endl;
+	cout << "删除失败" << endl;
 	return false;
 }
 string Graphlnk<T, E>::merge(string net, string subnet)
@@ -267,4 +268,78 @@ string Graphlnk<T, E>::merge(string net, string subnet)
 	a = to_string(fpart[3]) + '.' + to_string(fpart[2]) + '.' + to_string(fpart[1]) + '.' + to_string(fpart[0]);
 	return  a;
 }
+
+
+template<class T, class E>
+bool Graphlnk<T, E>::removeVertex(int v)		//同时删除和这个点有关的边
+{
+	int n = 0;
+	v = getVertexPos(v);				//得到编号v1的顶点位置
+	if (numVertices == 1 || v<0 || v >= numVertices)return false;
+	Edge<T, E> *p, *s, *t;
+	int i, k;
+	while (NodeTable[v].adj != NULL)			//逐个删除与其邻接的点对应的v
+	{
+		p = NodeTable[v].adj;
+		k = p->dest;
+		s = NodeTable[k].adj;					//找到和这个点邻接的点并删除相应边
+		t = NULL;
+		while (s != NULL && s->dest != v)
+		{
+			t = s;                           //t为s的上一个点
+			s = s->link;					 //找到那个点
+		}									 //s指向下一个点为v
+		if (s != NULL)
+		{
+			if (t == NULL) NodeTable[k].adj = s->link;  //意味着s->dest==v第一个点
+			else t->link = s->link;						//前一个点和后一点连接起来
+			delete s;
+		}
+		NodeTable[v].adj = p->link;				//遍历到下一个位置
+		delete p;
+		numEdges--;								//每次删除边数一条
+	}
+	numVertices--;
+	NodeTable[v].numRouter = NodeTable[numVertices].numRouter;				//将删除点的信息复制为最后一个点的信息，点从0开始
+	NodeTable[v].nameRouter = NodeTable[numVertices].nameRouter;
+	NodeTable[v].numofports = NodeTable[numVertices].numofports;
+	n = NodeTable[numVertices].numofports;											//接口数为最后一个顶点接口数
+	for (int i = 0; i < n; i++)
+	{
+		NodeTable[v].por[i].num = NodeTable[numVertices].por[i].num;							//依次接入接口
+		NodeTable[v].por[i].netNum = NodeTable[numVertices].por[i].netNum;				//将网络号传入到接口的网络号
+	}
+	p = NodeTable[v].adj = NodeTable[numVertices].adj;						//俩个重复信息
+	while (p != NULL)
+	{
+		k = p->dest;
+		s = NodeTable[k].adj;
+		while (s != NULL) {
+			if (s->dest == numVertices) {								 //删除重复最后一个点顶点位置对应的边使其指向下下个邻接点，类似上面的删除
+				s->dest = v;
+				break;
+			}
+			else s = s->link;
+		}
+			p = p->link;									//遍历到下一个邻接点
+	}
+	return true;
+}
+
+template<class T, class E>
+E Graphlnk<T, E>::getWeight(int v1, int v2)
+{
+	if (v1 != -1 && v2 != -1)
+	{
+		Edge<T, E> *p = NodeTable[v1].adj;
+		while (p != NULL && p->dest != v2)
+		{
+			p = p->link;
+		}
+		if (p != NULL)
+			return p->cost;
+		else return maxValue;
+	}
+}
+
 #endif
