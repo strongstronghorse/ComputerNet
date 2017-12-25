@@ -225,3 +225,19 @@ bool Graphlnk<T, E>::removeVertex(int v)		//同时删除和这个点有关的边
 	return true;
 }
 
+template<class T, class E>
+E Graphlnk<T, E>::getWeight(int v1, int v2)
+{
+	if (v1 != -1 && v2 != -1)
+	{
+		Edge<T, E> *p = NodeTable[v1].adj;
+		while (p != NULL && p->dest != v2)
+		{
+			p = p->link;
+		}
+		if (p != NULL)
+			return p->cost;
+		else return maxValue;
+	}
+}
+
