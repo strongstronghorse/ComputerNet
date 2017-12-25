@@ -127,3 +127,31 @@ private:
 	int numEdges;
 	int numVertices;
 };
+template<class T, class E>
+void Graphlnk<T, E>::readtext() {
+	ifstream vfile, efile;
+	Edge<string, int> edge;
+	Vertex<string, int> Router;
+	int v1, v2;
+	vfile.open("routers.txt");
+	if (!vfile) {
+		cout << "无法打开文件" << endl;
+		exit(1);
+	}
+	while (vfile.eof() != 1)
+	{
+		vfile >> Router.numRouter >> Router.nameRouter >> Router.borderNetNum >> Router.subNumber;
+		insertVertex(Router);
+	}
+	efile.open("edges.txt");
+	if (!efile) {
+		cout << "无法打开文件" << endl;
+		exit(1);
+	}
+	while (efile.eof() != 1)
+	{
+		efile >> edge.netNum >> edge.subNum >> v1 >> v2 >> edge.cost;
+		insertEdge(v1, v2, edge);
+	}
+
+}
