@@ -6,18 +6,18 @@
 using namespace std;
 const int DefaultNumOfPort = 8;
 const int DefaultVertices = 8;
-const int MaxVertices = 100;	//Í¼ÖĞµÄ×î´ó¶¥µãÊıÄ¿
-const int maxValue = 10000;	//ÎŞÇî´óµÄÈ¨Öµ
-const string invalidN = "0.0.0.0";//ÎŞĞ§ÍøÂçºÅ
-const string invalidS = "255.255.255.255";//ÎŞĞ§×ÓÍøÑÚÂë
+const int MaxVertices = 100;	//å›¾ä¸­çš„æœ€å¤§é¡¶ç‚¹æ•°ç›®
+const int maxValue = 10000;	//æ— ç©·å¤§çš„æƒå€¼
+const string invalidN = "0.0.0.0";//æ— æ•ˆç½‘ç»œå·
+const string invalidS = "255.255.255.255";//æ— æ•ˆå­ç½‘æ©ç 
 template<class T, class E>
 struct Edge
 {
 	int dest;
-	string netNum;          //ÍøÂçºÅ
-	E cost;                 //È¨Öµ
+	string netNum;          //ç½‘ç»œå·
+	E cost;                 //æƒå€¼
 	Edge<T, E> *link;
-	string subNum;          //×ÓÍøÑÚÂë
+	string subNum;          //å­ç½‘æ©ç 
 	Edge(int i_dest, string s_netNum, string subNum_mask, E i_cost)
 	{
 		dest = i_dest;
@@ -32,19 +32,19 @@ struct Edge
 	}
 };
 struct port {
-	int num;		//¶Ë¿ÚºÅ
-	string netNum;  //¶Ë¿ÚËùÊôÍøÂçºÅ
+	int num;		//ç«¯å£å·
+	string netNum;  //ç«¯å£æ‰€å±ç½‘ç»œå·
 };
 template<class T, class E>
 struct Vertex
 {
-	int numRouter;				 //Â·ÓÉ±àºÅ
-	T nameRouter;				 //Â·ÓÉÆ÷Ãû³Æ
-	string borderNetNum;		//±ß½çÂ·ÓÉÆ÷ÍøÂçºÅ
-	string subNumber;			 //×ÓÍøÑÚÂë
-	port *por;					 //½Ó¿ÚÊı×é
-	int numofports;				 //µ±Ç°½Ó¿ÚÊı
-	Edge<T, E> *adj;			 //±ßÁ´±íµÄÍ·Ö¸Õë
+	int numRouter;				 //è·¯ç”±ç¼–å·
+	T nameRouter;				 //è·¯ç”±å™¨åç§°
+	string borderNetNum;		//è¾¹ç•Œè·¯ç”±å™¨ç½‘ç»œå·
+	string subNumber;			 //å­ç½‘æ©ç 
+	port *por;					 //æ¥å£æ•°ç»„
+	int numofports;				 //å½“å‰æ¥å£æ•°
+	Edge<T, E> *adj;			 //è¾¹é“¾è¡¨çš„å¤´æŒ‡é’ˆ
 	Vertex() {
 		por = new port[DefaultNumOfPort];
 		numofports = 0;
@@ -56,11 +56,11 @@ class Graphlnk
 public:
 	Graphlnk(int sz = MaxVertices);
 	~Graphlnk();
-	T getValue(int i)					//È¡Î»ÖÃÎªiµÄ¶¥µãÖĞµÄÖµ
+	T getValue(int i)					//å–ä½ç½®ä¸ºiçš„é¡¶ç‚¹ä¸­çš„å€¼
 	{
 		return (i >= 0 && i< numVertices) ? NodeTable[i].nameRouter : 0;
 	}
-	E getWeight(int v1, int v2);			//·µ»Ø±ß(v1,v2)µÄÈ¨Öµ
+	E getWeight(int v1, int v2);			//è¿”å›è¾¹(v1,v2)çš„æƒå€¼
 	bool insertVertex(const Vertex<T, E> vertex);
 	bool removeVertex(int v);
 	bool insertEdge(int v1, int v2, const Edge<T, E> edge);
@@ -71,7 +71,7 @@ public:
 	{
 		return this->numVertices;
 	}
-	void getNetMeg(int v1, int v2, string &x, string &y) {						//´«³öĞÍ²ÎÊı,µÃµ½ÍøÂçºÅºÍ×ÓÍøÑÚÂë
+	void getNetMeg(int v1, int v2, string &x, string &y) {						//ä¼ å‡ºå‹å‚æ•°,å¾—åˆ°ç½‘ç»œå·å’Œå­ç½‘æ©ç 
 		if (v1 != -1 && v2 != -1)
 		{
 			Edge<T, E> *p = NodeTable[v1].adj;
@@ -91,7 +91,7 @@ public:
 		}
 
 	}
-	int getPort(int v1, int v2) {					//µÃµ½½Ó¿ÚºÅ
+	int getPort(int v1, int v2) {					//å¾—åˆ°æ¥å£å·
 		if (v1 != -1 && v2 != -1)
 		{
 			Edge<T, E> *p = NodeTable[v1].adj;
@@ -128,6 +128,33 @@ private:
 	int numVertices;
 };
 
+template<class T, class E>
+void Graphlnk<T, E>::readtext() {
+	ifstream vfile, efile;
+	Edge<string, int> edge;
+	Vertex<string, int> Router;
+	int v1, v2;
+	vfile.open("routers.txt");
+	if (!vfile) {
+		cout << "æ— æ³•æ‰“å¼€æ–‡ä»¶" << endl;
+		exit(1);
+	}
+	while (vfile.eof() != 1)
+	{
+		vfile >> Router.numRouter >> Router.nameRouter >> Router.borderNetNum >> Router.subNumber;
+		insertVertex(Router);
+	}
+	efile.open("edges.txt");
+	if (!efile) {
+		cout << "æ— æ³•æ‰“å¼€æ–‡ä»¶" << endl;
+		exit(1);
+	}
+	while (efile.eof() != 1)
+	{
+		efile >> edge.netNum >> edge.subNum >> v1 >> v2 >> edge.cost;
+		insertEdge(v1, v2, edge);
+	}
+
 
 template<class T, class E>
 bool Graphlnk<T, E>::insertVertex(const Vertex<T, E> vertex)
@@ -139,4 +166,5 @@ bool Graphlnk<T, E>::insertVertex(const Vertex<T, E> vertex)
 	NodeTable[numVertices].subNumber = vertex.subNumber;
 	numVertices++;
 	return true;
+
 }
